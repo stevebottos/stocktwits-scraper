@@ -10,25 +10,10 @@ import secrets
 import requests
 import json
 
-WATCHLIST = [
-"TSLA",
-"NAK",
-"RKT",
-"GEVO",
-"MARA",
-"BLIN",
-"OPTT",
-"EMAN",
-"LAC",
-"AKER",
-"SINT",
-"RNET",
-"APEX",
-]
-
 USERS = [
-    "newsfilterio",
-    "fla"
+    "Newsfilter",
+    "fla",
+    "cctranscripts"
 ]
 
 def scrape(users_of_interest, tickers_of_interest):
@@ -72,8 +57,7 @@ def send_email(email_content):
         smtp.send_message(msg)
 
 
-email_raw = scrape(USERS, WATCHLIST)
-
+email_raw = scrape(USERS, secrets.WATCHLIST)
 if len(email_raw):
     email_formatted = format_email_message(email_raw)
     send_email(email_formatted)
