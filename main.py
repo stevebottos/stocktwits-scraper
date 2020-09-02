@@ -9,6 +9,8 @@ import os
 import secrets
 import requests
 import json
+from datetime import datetime
+import pickle
 
 USERS = [
     "Newsfilter",
@@ -57,7 +59,25 @@ def send_email(email_content):
         smtp.send_message(msg)
 
 
+def save_list_as_pickle(lst, fname='todays_entries.pkl'):
+    with open(fname, 'wb+') as f:
+        pickle.dump(lst, f)
+
+
+def load_list_from_pickle(fname='todays_entries.pkl'):
+    with open('todays_entries.pkl', 'rb') as f:
+        return pickle.load(f)
+
+today = datetime.now()
+if today.time().hour == 0:
+    todays_entries = []
+    save_list_as_pickle(todays_entries)
+
+todays_entries = load_list_from_pickle()
 email_raw = scrape(USERS, secrets.WATCHLIST)
 if len(email_raw):
-    email_formatted = format_email_message(email_raw)
-    send_email(email_formatted)
+    if email_raw not in todays_entries:
+        todays_entries.append(email_raw)
+        save_list_as_pickle(todays_entries)
+        email_formatted = format_email_message(email_raw)
+        send_email(email_formatted)
